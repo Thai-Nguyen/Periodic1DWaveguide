@@ -15,15 +15,16 @@ def __apply_boundary_conditions(A, B, n):
     # Add last column to first column
     A[:, 0] += A[:, n-1]
     B[:, 0] += B[:, n-1]
-    # Add last row to second column
-    A[1, :] += A[n-1, :]
-    B[1, :] += B[n-1, :]
+    # Add last row to second row
+    A[0, :] += A[n-1, :]
+    B[0, :] += B[n-1, :]
     # Remove last column
     A = np.delete(A, n-1, axis=1)
     B = np.delete(B, n-1, axis=1)
     # Remove last row
     A = np.delete(A, n-1, axis=0)
     B = np.delete(B, n-1, axis=0)
+    return A, B
 
 
 def __which_region(e, num_elements):
@@ -72,8 +73,8 @@ def assembly(num_elements, total_num_elements, le, beta, EpsilonR, MuR):
     elD = np.zeros((nodes_per_element, nodes_per_element), dtype='complex128')
     elB = np.zeros((nodes_per_element, nodes_per_element), dtype='complex128')
 
-    A = np.zeros((total_num_elements + 1, total_num_elements + 1), dtype='complex128')
-    B = np.zeros((total_num_elements + 1, total_num_elements + 1), dtype='complex128')
+    A = np.zeros((total_num_elements+1, total_num_elements+1), dtype='complex128')
+    B = np.zeros((total_num_elements+1, total_num_elements+1), dtype='complex128')
 
     # Make connectivity array
     n = __create_connectivity_array(nodes_per_element, total_num_elements)
@@ -113,5 +114,5 @@ def assembly(num_elements, total_num_elements, le, beta, EpsilonR, MuR):
                 A[n[i, e], n[j, e]] += elG[i, j] + elT[i, j] + elD[i, j]
                 B[n[i, e], n[j, e]] += elB[i, j]
 
-    __apply_boundary_conditions(A, B, total_num_elements+1)
+    A, B = __apply_boundary_conditions(A, B, total_num_elements)
     return A, B

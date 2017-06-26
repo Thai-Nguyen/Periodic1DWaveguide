@@ -3,6 +3,6 @@ import scipy.linalg
 
 
 def solver(A, B):
-    # Get eigenvalues and eigenvectors (ignore left eigenvector)
+    # Get eigenvalues and corresponding eigenvectors
     w, v = sp.linalg.eig(A, B)
     return w
