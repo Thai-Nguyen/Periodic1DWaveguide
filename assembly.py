@@ -9,7 +9,7 @@ nodes_per_element = 2
 
 def __which_region(e, num_elements):
     '''
-    Determines whether the element e is in region 1, 2, or 3.
+    Determines whether the element e is in region 0 or 1.
     '''
 
     if e >= 0 and e <= num_elements[0]:
@@ -26,6 +26,9 @@ def __create_connectivity_array(nodes_per_element, total_num_elements):
     '''
     Method for creating connectivity array; an array used to assign a global
       node number for local node of a certain element
+    :param nodes_per_element:
+    :param total_num_elements:
+    :return:
     '''
 
     n = np.zeros((nodes_per_element, total_num_elements), dtype='int16')
@@ -46,6 +49,13 @@ def assembly(num_elements, total_num_elements, le, beta, EpsilonR, MuR):
     '''
     Assembles the A and B matrices to be used to solve the eigenvalue problem
       for the  1D periodic structure
+    :param num_elements:
+    :param total_num_elements:
+    :param le:
+    :param beta:
+    :param EpsilonR:
+    :param MuR:
+    :return:
     '''
     global nodes_per_element
 

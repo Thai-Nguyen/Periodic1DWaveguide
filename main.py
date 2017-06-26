@@ -37,7 +37,26 @@ def postprocess(allEig, beta_values, d):
     plt.grid()
     plt.xlim(0, np.pi)
     plt.ylim(0, 25)
+    plt.xlabel('$\\beta d$')
+    plt.ylabel('$k_0$')
     plt.show()
+    return None
+
+
+def run():
+
+    return None
+
+
+def sweep_parameter():
+    preprocess()
+    for i in range(beta_values):
+        fem()
+    postprocess()
+    return None
+
+
+def convergence_test():
     return None
 
 
@@ -51,11 +70,15 @@ if __name__ == '__main__':
     d = d1 + d2
 
     # Simulation parameters
-    num_elements_in_region = np.array((20, 20))
+    num_elements_in_region = np.array((100, 100))
     total_num_elements = num_elements_in_region[0] + num_elements_in_region[1]
 
     # Source parameter
     beta_values = np.linspace(0, np.pi / d, 50)
+
+    # run()
+    # sweep_parameter()
+    # convergence_test()
 
     # Pre-process step
     le = preprocess()
