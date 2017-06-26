@@ -13,20 +13,14 @@ def preprocess():
 
 def fem(le, beta_values, num_elements_in_region, total_num_elements, EpsilonR,
         MuR):
-    # Allocate space for eigenvalues
-    allEig = np.zeros((total_num_elements, np.size(beta_values)),
-                      dtype='complex128')
 
-    # Sweep beta parameter
-    for i in range(0, np.size(beta_values)):
-        A, B = assembly(num_elements_in_region, total_num_elements, le,
-                        beta_values[i], EpsilonR, MuR)
-        w = solver(A, B)
-        allEig[:, i] = w
-    return allEig
+    A, B = assembly(num_elements_in_region, total_num_elements, le,
+                        beta_values, EpsilonR, MuR)
+    eig_values, eig_vectors = solver(A, B)
+    return eig_values, eig_vectors
 
 
-def postprocess(allEig, beta_values, d):
+def plot_dispersion(allEig, beta_values, d):
     # Calculate k0
     k0 = np.sqrt(allEig)
 
@@ -43,16 +37,31 @@ def postprocess(allEig, beta_values, d):
     return None
 
 
-def run():
-
+def plot_electric_field(eig_value, eig_vector, beta, d):
+    # Plot the first three modes
+    for i in range(3):
+        print('i', i, 'k0', np.sqrt(eig_value[i]))
+        plt.plot(eig_vector[:, i])
+    plt.grid()
+    plt.show()
     return None
 
 
-def sweep_parameter():
-    preprocess()
-    for i in range(beta_values):
-        fem()
-    postprocess()
+def run(beta, d, num_elements_in_region, total_num_elements, EpsilonR, MuR):
+    le = preprocess()
+    eig_value, eig_vector = fem(le, beta, num_elements_in_region, total_num_elements,
+        EpsilonR, MuR)
+    plot_electric_field(eig_value, eig_vector, beta, d)
+    return None
+
+
+def sweep_parameter(beta_values, d, num_elements_in_region, total_num_elements, EpsilonR, MuR):
+    le = preprocess()
+    # Allocate space for eigenvalues
+    all_eig = np.zeros((total_num_elements, np.size(beta_values)), dtype='complex128')
+    for i in range(np.size(beta_values)):
+        all_eig[:, i], _ = fem(le, beta_values[i], num_elements_in_region, total_num_elements, EpsilonR, MuR)
+    plot_dispersion(all_eig, beta_values, d)
     return None
 
 
@@ -76,14 +85,7 @@ if __name__ == '__main__':
     # Source parameter
     beta_values = np.linspace(0, np.pi / d, 50)
 
-    # run()
-    # sweep_parameter()
+    run(beta_values[0], d, num_elements_in_region, total_num_elements, EpsilonR, MuR)
+    # sweep_parameter(beta_values, d, num_elements_in_region, total_num_elements, EpsilonR, MuR)
     # convergence_test()
 
-    # Pre-process step
-    le = preprocess()
-    # FEM step
-    allEig = fem(le, beta_values, num_elements_in_region, total_num_elements,
-                 EpsilonR, MuR)
-    # Post-process step
-    postprocess(allEig, beta_values, d)

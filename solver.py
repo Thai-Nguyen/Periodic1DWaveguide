@@ -10,13 +10,11 @@ def solver(A, B):
     :return:
     '''
     # Get eigenvalues and corresponding eigenvectors
-    w, v = sp.linalg.eig(A, B)
-
-    # Convert to column vectors
-    # w = scipy.transpose(w)
-    # v = scipy.transpose(v)
+    eig_values, eig_vectors = sp.linalg.eig(A, B)
 
     # Sort eigenvalues
-    w = scipy.sort(w)
+    id = eig_values.argsort()[::1]
+    eig_values = eig_values[id]
+    eig_vectors = eig_vectors[:, id]
 
-    return w
+    return eig_values, eig_vectors
