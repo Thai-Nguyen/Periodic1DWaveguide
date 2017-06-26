@@ -7,26 +7,6 @@ import numpy as np
 nodes_per_element = 2
 
 
-def __apply_boundary_conditions(A, B, n):
-    '''
-    Enforce periodic boundary conditions on A and B matrices of size n x n
-    '''
-
-    # Add last column to first column
-    A[:, 0] += A[:, n-1]
-    B[:, 0] += B[:, n-1]
-    # Add last row to second row
-    A[0, :] += A[n-1, :]
-    B[0, :] += B[n-1, :]
-    # Remove last column
-    A = np.delete(A, n-1, axis=1)
-    B = np.delete(B, n-1, axis=1)
-    # Remove last row
-    A = np.delete(A, n-1, axis=0)
-    B = np.delete(B, n-1, axis=0)
-    return A, B
-
-
 def __which_region(e, num_elements):
     '''
     Determines whether the element e is in region 1, 2, or 3.
@@ -50,13 +30,15 @@ def __create_connectivity_array(nodes_per_element, total_num_elements):
 
     n = np.zeros((nodes_per_element, total_num_elements), dtype='int16')
 
-    # Create array
+    # Create connectivity array
     node_num = 0
     for e in range(0, total_num_elements):  # row
         for i in range(0, nodes_per_element):  # col
             n[(i, e)] = node_num
             node_num += 1
         node_num -= 1
+    # Apply periodic boundary condition
+    n[nodes_per_element-1, total_num_elements-1] = 0
     return n
 
 
@@ -73,8 +55,8 @@ def assembly(num_elements, total_num_elements, le, beta, EpsilonR, MuR):
     elD = np.zeros((nodes_per_element, nodes_per_element), dtype='complex128')
     elB = np.zeros((nodes_per_element, nodes_per_element), dtype='complex128')
 
-    A = np.zeros((total_num_elements+1, total_num_elements+1), dtype='complex128')
-    B = np.zeros((total_num_elements+1, total_num_elements+1), dtype='complex128')
+    A = np.zeros((total_num_elements, total_num_elements), dtype='complex128')
+    B = np.zeros((total_num_elements, total_num_elements), dtype='complex128')
 
     # Make connectivity array
     n = __create_connectivity_array(nodes_per_element, total_num_elements)
@@ -113,6 +95,4 @@ def assembly(num_elements, total_num_elements, le, beta, EpsilonR, MuR):
             for j in range(0, nodes_per_element):
                 A[n[i, e], n[j, e]] += elG[i, j] + elT[i, j] + elD[i, j]
                 B[n[i, e], n[j, e]] += elB[i, j]
-
-    A, B = __apply_boundary_conditions(A, B, total_num_elements)
     return A, B

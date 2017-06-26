@@ -31,8 +31,9 @@ def postprocess(allEig, beta_values, d):
     k0 = np.sqrt(allEig)
 
     # Plot k0 vs beta*d
-    for i in range(20):
-        plt.plot(beta_values*d, k0[i, :], '.')
+    num_eig, _ = allEig.shape
+    for i in range(num_eig):
+        plt.plot(beta_values * d, k0[i, :], '.')
     plt.grid()
     plt.xlim(0, np.pi)
     plt.ylim(0, 25)
@@ -50,7 +51,7 @@ if __name__ == '__main__':
     d = d1 + d2
 
     # Simulation parameters
-    num_elements_in_region = np.array((10, 10))
+    num_elements_in_region = np.array((20, 20))
     total_num_elements = num_elements_in_region[0] + num_elements_in_region[1]
 
     # Source parameter
